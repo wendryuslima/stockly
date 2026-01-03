@@ -15,7 +15,7 @@ const SidebarLayout = ({ children }: SidebarLayoutProps) => {
       }
     >
       <Appsidebar />
-      <main className="">
+      <main className="flex-1 min-w-0">
         <div className="mr-4 hidden items-center gap-2 md:flex">
           <SidebarTrigger aria-label="Alternar sidebar" />
         </div>
