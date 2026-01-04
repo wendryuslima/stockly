@@ -1,36 +1,64 @@
 "use client";
 
-import { Product } from "@/lib/generated/prisma";
 import { ColumnDef } from "@tanstack/react-table";
+import type { Product } from "@prisma/client";
+import { Badge } from "@/components/ui/badge";
+import { CircleIcon } from "lucide-react";
 
-export type Products = {
-  id: string;
-  name: string;
-  unitPrice: number;
-  stock: number;
-  status: string;
+const getStatus = (status: string) => {
+  if (status === "IN_STOCK") {
+    return (
+      <Badge className="bg-[#EBFAF7] text-[#00A180]">
+        <div className="flex items-center gap-1">
+          <CircleIcon className="fill-[#00A180]" size={9} />
+          Em estoque
+        </div>
+      </Badge>
+    );
+  }
+  return (
+    <Badge className="bg-[#64748B1A] text-slate-500">
+      <div className="flex items-center gap-1">
+        <CircleIcon className="fill-slate-500" size={9} />
+        Esgotado
+      </div>
+    </Badge>
+  );
 };
 
 export const productColumDef: ColumnDef<Product>[] = [
   {
-    id: "products",
-    accessorKey: "products",
+    id: "name",
+    accessorKey: "name",
     header: "Produtos",
   },
-
   {
-    id: "unitPrice",
-    accessorKey: "unitPrice",
+    id: "price",
+    accessorKey: "price",
     header: "Valor unitário",
   },
   {
     id: "stock",
     accessorKey: "stock",
     header: "Estoque",
+    cell: ({ row }) => {
+      const product = row.original;
+      return product.stock;
+    },
   },
   {
     id: "status",
     accessorKey: "status",
     header: "Status",
+    cell: ({ row }) => {
+      const product = row.original;
+      const label = getStatus(product.status);
+      return label;
+    },
+  },
+  {
+    id: "actions",
+    accessorKey: "actions",
+    header: "Ações",
   },
 ];

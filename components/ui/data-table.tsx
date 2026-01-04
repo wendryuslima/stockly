@@ -6,7 +6,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { CalendarIcon } from "lucide-react";
+import { Box } from "lucide-react";
 
 import {
   Table,
@@ -37,8 +37,8 @@ export function DataTable<TData, TValue>({
   return (
     <div className="overflow-hidden rounded-md border">
       <div className="flex items-center gap-2 p-4">
-        <CalendarIcon size={14} />
-        <h1 className="text-sm font-semibold">Agendamentos</h1>
+        <Box size={14} />
+        <h1 className="text-sm font-semibold">Produtos</h1>
       </div>
 
       <Table>
