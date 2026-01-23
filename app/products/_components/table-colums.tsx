@@ -3,7 +3,21 @@
 import { ColumnDef } from "@tanstack/react-table";
 import type { Product } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
-import { CircleIcon } from "lucide-react";
+import {
+  CircleIcon,
+  ClipboardPaste,
+  MoreHorizontalIcon,
+  SquarePen,
+  Trash2Icon,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 const getStatus = (status: string) => {
   if (status === "IN_STOCK") {
@@ -60,5 +74,38 @@ export const productColumDef: ColumnDef<Product>[] = [
     id: "actions",
     accessorKey: "actions",
     header: "Ações",
+    cell: ({ row }) => {
+      const product = row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost">
+              {" "}
+              <MoreHorizontalIcon />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(product.id)}
+                className="flex cursor-pointer gap-2"
+              >
+                <ClipboardPaste />
+                Copiar ID
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex cursor-pointer gap-2">
+                <SquarePen />
+                Editar
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex cursor-pointer gap-2">
+                <Trash2Icon />
+                Excluir
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuGroup></DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
   },
 ];
