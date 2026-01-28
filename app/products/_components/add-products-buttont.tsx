@@ -33,6 +33,7 @@ import {
   CreateProductsSchema,
 } from "@/app/_actions/products/create-products";
 import { createProductsSchema } from "@/app/_actions/products/create-products/schema";
+import { toast } from "sonner";
 
 const AddProductsButton = () => {
   const form = useForm<CreateProductsSchema>({
@@ -52,9 +53,11 @@ const AddProductsButton = () => {
     setIsLoading(true);
     try {
       await createProducts(data);
+      toast.success("Produto criado com sucesso");
       setOpen(false);
     } catch (error) {
       console.log("Error creating product:", error);
+      toast.error("Erro ao criar o produto");
     } finally {
       setIsLoading(false);
     }

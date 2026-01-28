@@ -10,6 +10,9 @@ import {
   SquarePen,
   Trash2Icon,
 } from "lucide-react";
+
+import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import DeleteProductContent from "./delete-dialog";
 
 const getStatus = (status: string) => {
   if (status === "IN_STOCK") {
@@ -77,34 +80,39 @@ export const productColumDef: ColumnDef<Product>[] = [
     cell: ({ row }) => {
       const product = row.original;
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost">
-              {" "}
-              <MoreHorizontalIcon />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuGroup>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(product.id)}
-                className="flex cursor-pointer gap-2"
-              >
-                <ClipboardPaste />
-                Copiar ID
-              </DropdownMenuItem>
-              <DropdownMenuItem className="flex cursor-pointer gap-2">
-                <SquarePen />
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem className="flex cursor-pointer gap-2">
-                <Trash2Icon />
-                Excluir
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuGroup></DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <AlertDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost">
+                {" "}
+                <MoreHorizontalIcon />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  onClick={() => navigator.clipboard.writeText(product.id)}
+                  className="flex cursor-pointer gap-2"
+                >
+                  <ClipboardPaste />
+                  Copiar ID
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex cursor-pointer gap-2">
+                  <SquarePen />
+                  Editar
+                </DropdownMenuItem>
+                <AlertDialogTrigger className="" asChild>
+                  <DropdownMenuItem className="flex cursor-pointer gap-2">
+                    <Trash2Icon />
+                    Excluir
+                  </DropdownMenuItem>
+                </AlertDialogTrigger>
+              </DropdownMenuGroup>
+              <DropdownMenuGroup></DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DeleteProductContent id={product.id} />
+        </AlertDialog>
       );
     },
   },

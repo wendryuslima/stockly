@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import SidebarLayout from "./_components/sidebar-layout";
+import { Toaster } from "@/components/ui/sonner";
+
 
 export const metadata: Metadata = {
   title: "Stockly",
@@ -21,6 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <SidebarLayout>{children}</SidebarLayout>
+        <Toaster/>
       </body>
     </html>
   );
