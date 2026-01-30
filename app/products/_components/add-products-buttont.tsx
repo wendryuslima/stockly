@@ -21,7 +21,7 @@ const AddProductsButton = () => {
       </DialogTrigger>
       <DialogContent className="">
         <UpsertProductsDialog
-          setOpen={setOpen}
+          onSuccess={() => setOpen(false)}
           description="Insira as informações do produto"
         />
       </DialogContent>

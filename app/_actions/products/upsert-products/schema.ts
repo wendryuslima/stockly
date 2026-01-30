@@ -1,6 +1,7 @@
 import z from "zod";
 
-export const createProductsSchema = z.object({
+export const upsertProductSchema = z.object({
+  id: z.string().optional(),
   name: z
     .string()
     .min(1, { message: "Nome do produto é obrigatório" })
