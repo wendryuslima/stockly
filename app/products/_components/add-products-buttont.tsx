@@ -8,14 +8,18 @@ import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import UpsertProductsDialog from "./upsert-products-dialog";
 
-const AddProductsButton = () => {
+interface AddProductsButtonProps {
+  title?: string;
+}
+
+const AddProductsButton = ({ title }: AddProductsButtonProps) => {
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="flex items-center">
-          Adicionar produto
+          {title}
           <PlusIcon size={14} />
         </Button>
       </DialogTrigger>
