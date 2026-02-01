@@ -60,11 +60,15 @@ const UpsertProductsDialog = ({
     setIsLoading(true);
     try {
       await upsertProducts({ ...data, id: defaultValues?.id });
-      toast.success("Produto criado com sucesso");
+      if (defaultValues?.id) {
+        toast.success("Produto atualizado com sucesso");
+      } else {
+        toast.success("Produto criado com sucesso");
+      }
       onSuccess?.();
     } catch (error) {
-      console.log("Error creating product:", error);
-      toast.error("Erro ao criar o produto");
+      console.log("Error updating product:", error);
+      toast.error("Erro ao atualizar o produto");
     } finally {
       setIsLoading(false);
     }
