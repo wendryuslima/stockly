@@ -9,7 +9,7 @@ import { useState } from "react";
 import UpsertProductsDialog from "./upsert-products-dialog";
 
 interface AddProductsButtonProps {
-  title?: string;
+  title: string;
 }
 
 const AddProductsButton = ({ title }: AddProductsButtonProps) => {

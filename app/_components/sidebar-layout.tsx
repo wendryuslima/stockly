@@ -6,16 +6,9 @@ interface SidebarLayoutProps {
 
 const SidebarLayout = ({ children }: SidebarLayoutProps) => {
   return (
-    <SidebarProvider
-      className=""
-      style={
-        {
-          "--sidebar-width": "16rem",
-        } as React.CSSProperties
-      }
-    >
+    <SidebarProvider>
       <Appsidebar />
-      <main className="flex-1 min-w-0">
+      <main className="min-w-0 flex-1">
         <div className="mr-4 hidden items-center gap-2 md:flex">
           <SidebarTrigger aria-label="Alternar sidebar" />
         </div>
