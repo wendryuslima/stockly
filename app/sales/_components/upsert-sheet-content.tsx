@@ -39,17 +39,14 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
+import SalesTableDropdownMenu from "./table-dropdown-menu";
+
 interface UpsertSheetContentProps {
   products: Product[];
   productOptions: ComboboxOption[];
 }
 
-interface SelectProduct {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
+type SelectProduct = Product & { quantity: number };
 
 const formSchema = z.object({
   productId: z.string().uuid({
@@ -96,9 +93,7 @@ const UpsertSheetContent = ({
       return [
         ...prev,
         {
-          id: selectProduct.id,
-          name: selectProduct.name,
-          price: Number(selectProduct.price),
+          ...selectProduct,
           quantity: data.quantity,
         },
       ];
@@ -111,9 +106,15 @@ const UpsertSheetContent = ({
 
   const productTotal = useMemo(() => {
     return selectProduct.reduce((acc, product) => {
-      return acc + product.price * product.quantity;
+      return acc + Number(product.price) * product.quantity;
     }, 0);
   }, [selectProduct]);
+
+  const handleDeleteProduct = (productId: string) => {
+    setSelectProduct((prev) => {
+      return prev.filter((product) => product.id !== productId);
+    });
+  };
   return (
     <SheetContent className="!max-w-[600px] rounded-lg">
       <SheetHeader>
@@ -168,23 +169,30 @@ const UpsertSheetContent = ({
       </Form>
 
       <Table>
-        <TableCaption>lista dos produtos adicionado a venda.</TableCaption>
+        <TableCaption>Lista dos produtos adicionado a venda.</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Produto</TableHead>
             <TableHead>Quantidade</TableHead>
             <TableHead>Preço</TableHead>
             <TableHead>Total</TableHead>
+            <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {selectProduct.map((product) => (
             <TableRow key={product.id}>
               <TableCell>{product.name}</TableCell>
-              <TableCell>{formatCurrency(product.price)}</TableCell>
+              <TableCell>{formatCurrency(Number(product.price))}</TableCell>
               <TableCell>{product.quantity}</TableCell>
               <TableCell>
-                {formatCurrency(product.quantity * product.price)}
+                {formatCurrency(product.quantity * Number(product.price))}
+              </TableCell>
+              <TableCell>
+                <SalesTableDropdownMenu
+                  onDelete={handleDeleteProduct}
+                  product={product}
+                />
               </TableCell>
             </TableRow>
           ))}
