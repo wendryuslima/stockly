@@ -74,34 +74,47 @@ const UpsertSheetContent = ({
     },
   });
   const onSubmit = (data: FormSchemaType) => {
-    const selectProduct = products.find(
+    const selectedProduct = products.find(
       (product) => product.id === data.productId,
     );
-    if (!selectProduct) return;
-    setSelectProduct((prev) => {
-      const existingProduct = prev.find(
-        (product) => product.id === selectProduct.id,
-      );
-      if (existingProduct) {
-        return prev.map((product) =>
-          product.id === selectProduct.id
-            ? { ...product, quantity: product.quantity + data.quantity }
-            : product,
-        );
-      }
+    if (!selectedProduct) return;
 
-      return [
-        ...prev,
+    const existingProduct = selectProduct.find(
+      (product) => product.id === selectedProduct.id,
+    );
+    const currentQuantity = existingProduct?.quantity ?? 0;
+    const productIsOutOfstock =
+      currentQuantity + data.quantity > selectedProduct.stock;
+    if (productIsOutOfstock) {
+      form.setError("quantity", {
+        message: "Quantidade indisponível em estoque",
+      });
+      return;
+    }
+
+    if (existingProduct) {
+      setSelectProduct(
+        selectProduct.map((product) =>
+          product.id === selectedProduct.id
+            ? {
+                ...product,
+                quantity: product.quantity + data.quantity,
+              }
+            : product,
+        ),
+      );
+    } else {
+      setSelectProduct([
+        ...selectProduct,
         {
-          ...selectProduct,
+          ...selectedProduct,
           quantity: data.quantity,
         },
-      ];
+      ]);
+    }
+    form.reset();
 
-      form.reset();
-    });
-
-    console.log(selectProduct);
+    console.log(selectedProduct);
   };
 
   const productTotal = useMemo(() => {
@@ -173,8 +186,8 @@ const UpsertSheetContent = ({
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Produto</TableHead>
-            <TableHead>Quantidade</TableHead>
             <TableHead>Preço</TableHead>
+            <TableHead>Quantidade</TableHead>
             <TableHead>Total</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
