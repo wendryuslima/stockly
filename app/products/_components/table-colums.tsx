@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import type { Product } from "@prisma/client";
+import type { Product } from "@/lib/generated/prisma";
 import { Badge } from "@/components/ui/badge";
 import { CircleIcon } from "lucide-react";
 

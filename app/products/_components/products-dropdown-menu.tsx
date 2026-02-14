@@ -11,7 +11,7 @@ import DeleteProductContent from "./delete-dialog";
 import UpsertProductsDialog from "./upsert-products-dialog";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
-import { Product } from "@prisma/client";
+import type { Product } from "@/lib/generated/prisma";
 import {
   DropdownMenu,
   DropdownMenuContent,

@@ -4,11 +4,15 @@ import TitlePages from "../_components/title-pages";
 import { getProducts } from "../_data-access/products/get-products";
 
 import CreateSaleButton from "./_components/create-sale-button";
+import { DataTable } from "@/components/ui/data-table";
+import { saleTableColums } from "./_components/table.colums";
+import { getSales } from "../_data-access/sales/get-sales";
 
 const SalesPage = async () => {
+  const sales = await getSales();
   const products = await getProducts();
   const productsOptions: ComboboxOption[] = products.map((product) => ({
-    label: product.name,
+    label: `${product.name} - ${product.stock}`,
     value: product.id,
   }));
 
@@ -20,6 +24,9 @@ const SalesPage = async () => {
           products={products}
           productOptions={productsOptions}
         />
+      </div>
+      <div className="w-full">
+        <DataTable columns={saleTableColums} data={sales} />
       </div>
     </div>
   );

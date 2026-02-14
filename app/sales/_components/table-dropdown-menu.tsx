@@ -1,4 +1,4 @@
-'use client";';
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Product } from "@prisma/client";
-import { Pick } from "@prisma/client/runtime/library";
+import type { Product } from "@/lib/generated/prisma";
 
 import { MoreHorizontalIcon, ClipboardPaste, Trash2Icon } from "lucide-react";
 

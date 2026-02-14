@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import { PlusIcon } from "lucide-react";
 import UpsertSheetContent from "./upsert-sheet-content";
-import { Product } from "@prisma/client";
+import type { Product } from "@/lib/generated/prisma";
 import { ComboboxOption } from "@/components/ui/combobox";
 import { useState } from "react";
 

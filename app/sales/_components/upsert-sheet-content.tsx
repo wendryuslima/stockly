@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/table";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Product } from "@prisma/client";
+import type { Product } from "@/lib/generated/prisma";
 
 import { CheckIcon, Loader2Icon, PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -44,9 +44,7 @@ import SalesTableDropdownMenu from "./table-dropdown-menu";
 import { crateSaleAction } from "@/app/_actions/sales/create-sale";
 import { toast } from "sonner";
 import { useAction } from "next-safe-action/hooks";
-import {
-  flattenValidationErrors,
-} from "next-safe-action";
+import { flattenValidationErrors } from "next-safe-action";
 
 interface UpsertSheetContentProps {
   products: Product[];
@@ -183,7 +181,7 @@ const UpsertSheetContent = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nome do produto</FormLabel>
-                <FormControl>
+                <FormControl className="flex">
                   <Combobox
                     placeholder="Selecione um produto"
                     options={productOptions}
