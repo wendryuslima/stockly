@@ -41,13 +41,17 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 
 import SalesTableDropdownMenu from "./table-dropdown-menu";
-import { createSale } from "@/app/_actions/sales/create-sale";
+import { crateSaleAction } from "@/app/_actions/sales/create-sale";
 import { toast } from "sonner";
+import { useAction } from "next-safe-action/hooks";
+import {
+  flattenValidationErrors,
+} from "next-safe-action";
 
 interface UpsertSheetContentProps {
   products: Product[];
   productOptions: ComboboxOption[];
-  onSubmitSuccess: () => void;
+  onSubmitSuccess: (open: boolean) => void;
 }
 
 type SelectProduct = Product & { quantity: number };
@@ -71,6 +75,24 @@ const UpsertSheetContent = ({
 }: UpsertSheetContentProps) => {
   const [selectProduct, setSelectProduct] = useState<SelectProduct[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { execute: executeCreateSale } = useAction(crateSaleAction, {
+    onError: ({ error }) => {
+      const flattenedErrors = error.validationErrors
+        ? flattenValidationErrors(error.validationErrors)
+        : null;
+      toast.error(
+        error.serverError ??
+          flattenedErrors?.formErrors[0] ??
+          "Erro ao relizar venda",
+      );
+      console.log({ error });
+    },
+    onSuccess: () => {
+      toast.success("Venda realizada com successo");
+      onSubmitSuccess(false);
+      setIsLoading(false);
+    },
+  });
 
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
@@ -136,24 +158,12 @@ const UpsertSheetContent = ({
   };
 
   const handleSubmitSale = async () => {
-    setIsLoading(true);
-    true;
-    try {
-      await createSale({
-        products: selectProduct.map((product) => ({
-          id: product.id,
-          quantity: product.quantity,
-        })),
-      });
-
-      toast.success("Venda realizada com sucesso");
-      onSubmitSuccess();
-    } catch (error) {
-      console.log(error);
-      toast.error("Erro ao criar venda");
-    } finally {
-      setIsLoading(false);
-    }
+    executeCreateSale({
+      product: selectProduct.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+      })),
+    });
   };
 
   const hasProduct = selectProduct.length === 0;

@@ -1,4 +1,4 @@
-'use client";';
+"use client";
 import {
   upsertProducts,
   UpsertProductSchema,
@@ -25,11 +25,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useAction } from "next-safe-action/hooks";
 
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
+import { flattenValidationErrors } from "next-safe-action";
 
 interface UpsertProductsDialogProps {
   defaultValues?: UpsertProductSchema;
@@ -54,24 +55,31 @@ const UpsertProductsDialog = ({
     },
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const onSubmit = async (data: UpsertProductSchema) => {
-    setIsLoading(true);
-    try {
-      await upsertProducts({ ...data, id: defaultValues?.id });
+  const { execute: executeUpsertProducts, status } = useAction(upsertProducts, {
+    onSuccess: () => {
       if (defaultValues?.id) {
         toast.success("Produto atualizado com sucesso");
       } else {
         toast.success("Produto criado com sucesso");
       }
       onSuccess?.();
-    } catch (error) {
+    },
+    onError: ({ error }) => {
+      const flattenedErrors = error.validationErrors
+        ? flattenValidationErrors(error.validationErrors)
+        : null;
+      toast.error(
+        error.serverError ??
+          flattenedErrors?.formErrors[0] ??
+          "Erro ao atualizar o produto",
+      );
       console.log("Error updating product:", error);
-      toast.error("Erro ao atualizar o produto");
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+  const isLoading = status === "executing";
+
+  const onSubmit = async (data: UpsertProductSchema) => {
+    executeUpsertProducts({ ...data, id: defaultValues?.id });
   };
   return (
     <DialogContent>

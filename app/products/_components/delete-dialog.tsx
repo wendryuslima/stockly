@@ -1,3 +1,5 @@
+"use client";
+
 import { deleteProducts } from "@/app/_actions/products/delete-products";
 import {
   AlertDialogHeader,
@@ -8,6 +10,8 @@ import {
   AlertDialogDescription,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { flattenValidationErrors } from "next-safe-action";
+import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 
 interface DeleteProductContentProps {
@@ -15,14 +19,25 @@ interface DeleteProductContentProps {
 }
 
 const DeleteProductContent = ({ id }: DeleteProductContentProps) => {
-  const handleDeleteClick = async () => {
-    try {
-      await deleteProducts({ id });
+  const { execute: executeDeleteProduct, status } = useAction(deleteProducts, {
+    onSuccess: () => {
       toast.success("Produto deletado com sucesso");
-    } catch (error) {
+    },
+    onError: ({ error }) => {
+      const flattenedErrors = error.validationErrors
+        ? flattenValidationErrors(error.validationErrors)
+        : null;
+      toast.error(
+        error.serverError ??
+          flattenedErrors?.formErrors[0] ??
+          "Erro ao deletar o produto",
+      );
       console.log("Error deleting product:", error);
-      toast.error("Erro ao deletar o produto");
-    }
+    },
+  });
+  const isLoading = status === "executing";
+  const handleDeleteClick = () => {
+    executeDeleteProduct({ id });
   };
   return (
     <AlertDialogContent>
@@ -36,7 +51,7 @@ const DeleteProductContent = ({ id }: DeleteProductContentProps) => {
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancelar</AlertDialogCancel>
-        <AlertDialogAction onClick={handleDeleteClick}>
+        <AlertDialogAction onClick={handleDeleteClick} disabled={isLoading}>
           Continuar
         </AlertDialogAction>
       </AlertDialogFooter>
