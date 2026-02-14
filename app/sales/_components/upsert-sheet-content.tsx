@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import {
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
@@ -33,17 +34,20 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Product } from "@prisma/client";
 
-import { PlusIcon } from "lucide-react";
+import { CheckIcon, Loader2Icon, PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { useForm } from "react-hook-form";
 import z from "zod";
 
 import SalesTableDropdownMenu from "./table-dropdown-menu";
+import { createSale } from "@/app/_actions/sales/create-sale";
+import { toast } from "sonner";
 
 interface UpsertSheetContentProps {
   products: Product[];
   productOptions: ComboboxOption[];
+  onSubmitSuccess: () => void;
 }
 
 type SelectProduct = Product & { quantity: number };
@@ -63,8 +67,10 @@ type FormSchemaType = z.infer<typeof formSchema>;
 const UpsertSheetContent = ({
   products,
   productOptions,
+  onSubmitSuccess,
 }: UpsertSheetContentProps) => {
   const [selectProduct, setSelectProduct] = useState<SelectProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
@@ -128,8 +134,31 @@ const UpsertSheetContent = ({
       return prev.filter((product) => product.id !== productId);
     });
   };
+
+  const handleSubmitSale = async () => {
+    setIsLoading(true);
+    true;
+    try {
+      await createSale({
+        products: selectProduct.map((product) => ({
+          id: product.id,
+          quantity: product.quantity,
+        })),
+      });
+
+      toast.success("Venda realizada com sucesso");
+      onSubmitSuccess();
+    } catch (error) {
+      console.log(error);
+      toast.error("Erro ao criar venda");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const hasProduct = selectProduct.length === 0;
   return (
-    <SheetContent className="!max-w-[600px] rounded-lg">
+    <SheetContent className="!max-w-[600px] overflow-auto rounded-lg">
       <SheetHeader>
         <SheetTitle>Adicionar venda</SheetTitle>
         <SheetDescription>
@@ -217,6 +246,23 @@ const UpsertSheetContent = ({
           </TableRow>
         </TableFooter>
       </Table>
+      <SheetFooter className="pt-6">
+        <Button
+          disabled={hasProduct || isLoading}
+          onClick={handleSubmitSale}
+          className="w-full gap-2"
+        >
+          {isLoading ? (
+            <>
+              <CheckIcon size={20} />
+              <Loader2Icon className="h-4 w-4 animate-spin" />
+              ...Carregando
+            </>
+          ) : (
+            "Finalizar venda"
+          )}
+        </Button>
+      </SheetFooter>
     </SheetContent>
   );
 };
