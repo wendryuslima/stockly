@@ -8,9 +8,5 @@ export const upsertProductSchema = z.object({
     .trim()
     .max(50),
   price: z.number().min(0.01, { message: "Valor unitário é obrigatório" }),
-  stock: z
-    .number()
-    .positive()
-    .int()
-    .min(1, { message: "Estoque é obrigatório" }),
+  stock: z.number().int().min(0, { message: "Estoque é obrigatório" }),
 });
