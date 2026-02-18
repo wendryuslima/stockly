@@ -7,27 +7,24 @@ import type { Product } from "@/lib/generated/prisma";
 import { ComboboxOption } from "@/components/ui/combobox";
 import { useState } from "react";
 
-interface CreateSaleButtonProps {
+interface UpsertSaleButtonProps {
   products: Product[];
   productOptions: ComboboxOption[];
 }
 
-const CreateSaleButton = (props: CreateSaleButtonProps) => {
+const UpsertSaleButton = (props: UpsertSaleButtonProps) => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <SheetTrigger>
         <Button className="flex items-center">
           Adicionar venda
-          <PlusIcon size={14} /> 
+          <PlusIcon size={14} />
         </Button>
       </SheetTrigger>
-      <UpsertSheetContent
-        onSubmitSuccess={() => setIsSheetOpen(false)}
-        {...props}
-      />
+      <UpsertSheetContent setSheetIsOpen={setIsSheetOpen} {...props} />
     </Sheet>
   );
 };
 
-export default CreateSaleButton;
+export default UpsertSaleButton;

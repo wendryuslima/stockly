@@ -3,10 +3,12 @@
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-import { MoreHorizontalIcon, ClipboardPaste, Trash2Icon } from "lucide-react";
-
-import { Dialog } from "@/components/ui/dialog";
-import { useState } from "react";
+import {
+  MoreHorizontalIcon,
+  ClipboardPaste,
+  Trash2Icon,
+  PencilIcon,
+} from "lucide-react";
 
 import {
   DropdownMenu,
@@ -16,15 +18,30 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeleteSaleContent from "./delete-dialog";
+import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import UpsertSheetContent from "./upsert-sheet-content";
+import { useState } from "react";
+import { ComboboxOption } from "@/components/ui/combobox";
+import type { Product } from "@/lib/generated/prisma";
+import type { GetSalesDto } from "@/app/_data-access/sales/get-sales";
 
 interface SalesDropdownMenuProps {
   id: string;
+  productsOptions: ComboboxOption[];
+  products: Product[];
+  saleProducts: GetSalesDto["saleProducts"];
 }
 
-const SalesDropdownMenu = ({ id }: SalesDropdownMenuProps) => {
-  const [isEditOpen, setIsEditOpen] = useState(false);
+const SalesDropdownMenu = ({
+  id,
+  productsOptions,
+  products,
+  saleProducts,
+}: SalesDropdownMenuProps) => {
+  const [upsertSheetIsOpen, setUpsertSheetIsOpen] = useState(false);
+
   return (
-    <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+    <Sheet open={upsertSheetIsOpen} onOpenChange={setUpsertSheetIsOpen}>
       <AlertDialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -42,6 +59,16 @@ const SalesDropdownMenu = ({ id }: SalesDropdownMenuProps) => {
                 Copiar ID
               </DropdownMenuItem>
 
+              <SheetTrigger asChild>
+                <DropdownMenuItem
+                  onClick={() => navigator.clipboard.writeText(id)}
+                  className="flex cursor-pointer gap-2"
+                >
+                  <PencilIcon />
+                  Editar
+                </DropdownMenuItem>
+              </SheetTrigger>
+
               <AlertDialogTrigger className="" asChild>
                 <DropdownMenuItem className="flex cursor-pointer gap-2">
                   <Trash2Icon />
@@ -53,7 +80,20 @@ const SalesDropdownMenu = ({ id }: SalesDropdownMenuProps) => {
         </DropdownMenu>
         <DeleteSaleContent id={id} />
       </AlertDialog>
-    </Dialog>
+
+      <UpsertSheetContent
+        saleId={id}
+        defaultSelectedProducts={saleProducts.map((saleProduct) => ({
+          id: saleProduct.productId,
+          quantity: saleProduct.quantity,
+          name: saleProduct.productName,
+          price: saleProduct.unitPrice,
+        }))}
+        productOptions={productsOptions}
+        products={products}
+        setSheetIsOpen={setUpsertSheetIsOpen}
+      />
+    </Sheet>
   );
 };
 

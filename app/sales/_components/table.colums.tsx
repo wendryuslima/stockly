@@ -2,11 +2,18 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { GetSalesDto } from "@/app/_data-access/sales/get-sales";
+import type { GetSalesDto } from "@/app/_data-access/sales/get-sales";
 import { formatCurrency } from "@/app/helpers/currency";
 import SalesDropdownMenu from "./sales.dropdown-menu";
+import { Product } from "@/lib/generated/prisma";
+import { ComboboxOption } from "@/components/ui/combobox";
 
-export const saleTableColums: ColumnDef<GetSalesDto>[] = [
+interface SaleTableColum extends GetSalesDto {
+  products: Product[];
+  productsOptions: ComboboxOption[];
+}
+
+export const saleTableColums: ColumnDef<SaleTableColum>[] = [
   {
     id: "id",
     accessorKey: "productName",
@@ -50,10 +57,17 @@ export const saleTableColums: ColumnDef<GetSalesDto>[] = [
     header: "Ações",
     cell: ({
       row: {
-        original: { id },
+        original: { id, products, productsOptions, saleProducts },
       },
     }) => {
-      return <SalesDropdownMenu id={id} />;
+      return (
+        <SalesDropdownMenu
+          id={id}
+          products={products}
+          productsOptions={productsOptions}
+          saleProducts={saleProducts}
+        />
+      );
     },
   },
 ];

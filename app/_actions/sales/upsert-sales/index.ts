@@ -1,30 +1,53 @@
 "use server";
 
 import { db } from "@/lib/prisma";
-import { createSaleSchema } from "./schema";
+import { upsertSaleSchema } from "./schema";
 
 import { actionClient } from "@/lib/safe-action";
 import { revalidatePath } from "next/cache";
 import { returnValidationErrors } from "next-safe-action";
 
-export const crateSaleAction = actionClient
-  .schema(createSaleSchema)
-  .action(async ({ parsedInput: { product } }) => {
+export const upsertSale = actionClient
+  .schema(upsertSaleSchema)
+  .action(async ({ parsedInput: { product, id } }) => {
+    const isUpdate = Boolean(id);
+
     await db.$transaction(async (trx) => {
-      const sale = await db.sale.create({
+      if (isUpdate) {
+        const existingSale = await trx.sale.findUnique({
+          where: { id },
+          include: { saleProducts: true },
+        });
+        if (!existingSale) return;
+        await trx.sale.delete({
+          where: { id },
+        });
+        for (const product of existingSale.saleProducts) {
+          await trx.product.update({
+            where: { id: product.productId },
+            data: {
+              stock: {
+                increment: product.quantity,
+              },
+            },
+          });
+        }
+      }
+
+      const sale = await trx.sale.create({
         data: {
           date: new Date(),
         },
       });
 
       for (const products of product) {
-        const productsFromDb = await db.product.findUnique({
+        const productsFromDb = await trx.product.findUnique({
           where: {
             id: products.id,
           },
         });
         if (!productsFromDb) {
-          returnValidationErrors(createSaleSchema, {
+          returnValidationErrors(upsertSaleSchema, {
             _errors: ["Products not found"],
           });
         }
@@ -32,8 +55,8 @@ export const crateSaleAction = actionClient
         const productsIsOutOfStock = products.quantity > productsFromDb.stock;
 
         if (productsIsOutOfStock) {
-          returnValidationErrors(createSaleSchema, {
-            _errors: ["Produts not found"],
+          returnValidationErrors(upsertSaleSchema, {
+            _errors: ["Products out of stock"],
           });
         }
 
@@ -58,4 +81,5 @@ export const crateSaleAction = actionClient
       }
     });
     revalidatePath("/products");
+    revalidatePath("/sales");
   });

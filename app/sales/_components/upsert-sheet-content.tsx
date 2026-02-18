@@ -41,18 +41,25 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 
 import SalesTableDropdownMenu from "./table-dropdown-menu";
-import { crateSaleAction } from "@/app/_actions/sales/create-sale";
+import { upsertSale } from "@/app/_actions/sales/upsert-sales";
 import { toast } from "sonner";
 import { useAction } from "next-safe-action/hooks";
 import { flattenValidationErrors } from "next-safe-action";
 
+type SelectProduct = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+};
+
 interface UpsertSheetContentProps {
+  saleId?: string;
   products: Product[];
   productOptions: ComboboxOption[];
-  onSubmitSuccess: (open: boolean) => void;
+  setSheetIsOpen: (open: boolean) => void;
+  defaultSelectedProducts?: SelectProduct[];
 }
-
-type SelectProduct = Product & { quantity: number };
 
 const formSchema = z.object({
   productId: z.string().uuid({
@@ -67,13 +74,17 @@ const formSchema = z.object({
 type FormSchemaType = z.infer<typeof formSchema>;
 
 const UpsertSheetContent = ({
+  saleId,
   products,
   productOptions,
-  onSubmitSuccess,
+  setSheetIsOpen,
+  defaultSelectedProducts,
 }: UpsertSheetContentProps) => {
-  const [selectProduct, setSelectProduct] = useState<SelectProduct[]>([]);
+  const [selectProduct, setSelectProduct] = useState<SelectProduct[]>(
+    defaultSelectedProducts ?? [],
+  );
   const [isLoading, setIsLoading] = useState(false);
-  const { execute: executeCreateSale } = useAction(crateSaleAction, {
+  const { execute: executeUpsertSale } = useAction(upsertSale, {
     onError: ({ error }) => {
       const flattenedErrors = error.validationErrors
         ? flattenValidationErrors(error.validationErrors)
@@ -87,7 +98,7 @@ const UpsertSheetContent = ({
     },
     onSuccess: () => {
       toast.success("Venda realizada com successo");
-      onSubmitSuccess(false);
+      setSheetIsOpen(false);
       setIsLoading(false);
     },
   });
@@ -133,7 +144,9 @@ const UpsertSheetContent = ({
       setSelectProduct([
         ...selectProduct,
         {
-          ...selectedProduct,
+          id: selectedProduct.id,
+          name: selectedProduct.name,
+          price: Number(selectedProduct.price),
           quantity: data.quantity,
         },
       ]);
@@ -145,7 +158,7 @@ const UpsertSheetContent = ({
 
   const productTotal = useMemo(() => {
     return selectProduct.reduce((acc, product) => {
-      return acc + Number(product.price) * product.quantity;
+      return acc + product.price * product.quantity;
     }, 0);
   }, [selectProduct]);
 
@@ -156,7 +169,8 @@ const UpsertSheetContent = ({
   };
 
   const handleSubmitSale = async () => {
-    executeCreateSale({
+    executeUpsertSale({
+      id: saleId,
       product: selectProduct.map((product) => ({
         id: product.id,
         quantity: product.quantity,
@@ -233,10 +247,10 @@ const UpsertSheetContent = ({
           {selectProduct.map((product) => (
             <TableRow key={product.id}>
               <TableCell>{product.name}</TableCell>
-              <TableCell>{formatCurrency(Number(product.price))}</TableCell>
+              <TableCell>{formatCurrency(product.price)}</TableCell>
               <TableCell>{product.quantity}</TableCell>
               <TableCell>
-                {formatCurrency(product.quantity * Number(product.price))}
+                {formatCurrency(product.quantity * product.price)}
               </TableCell>
               <TableCell>
                 <SalesTableDropdownMenu
