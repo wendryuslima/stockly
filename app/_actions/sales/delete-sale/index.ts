@@ -16,12 +16,12 @@ export const deleteSale = actionClient
 
       if (!sale) return;
 
-      for (const saleProduct of sale.saleProducts) {
+      for (const product of sale.saleProducts) {
         await trx.product.update({
-          where: { id: saleProduct.productId },
+          where: { id: product.productId },
           data: {
             stock: {
-              increment: saleProduct.quantity,
+              increment: product.quantity,
             },
           },
         });
@@ -30,8 +30,20 @@ export const deleteSale = actionClient
       await trx.sale.delete({
         where: { id },
       });
+
+      for (const product of sale.saleProducts) {
+        await trx.product.update({
+          where: { id: product.productId },
+          data: {
+            stock: {
+              increment: product.quantity,
+            },
+          },
+        });
+      }
     });
 
     revalidatePath("/sales");
     revalidatePath("/products");
+    revalidatePath("/");
   });

@@ -24,7 +24,6 @@ import {
   LayoutDashboard,
   Package,
   ShoppingCart,
-  Home,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -37,14 +36,9 @@ const Appsidebar = () => {
   };
   const navItems = [
     {
-      label: "Início",
-      icon: Home,
-      href: "/",
-    },
-    {
       label: "Dashboard",
       icon: LayoutDashboard,
-      href: "/dashboard",
+      href: "/",
     },
     {
       label: "Produtos",
