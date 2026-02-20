@@ -16,5 +16,5 @@ export const upsertProducts = actionClient
       update: parsedInput,
       create: parsedInput,
     });
-    revalidatePath("/products");
+    revalidatePath("/", "layout");
   });
