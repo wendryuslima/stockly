@@ -78,9 +78,12 @@ const Appsidebar = () => {
                         className="bg-zinc-900 text-white"
                         asChild
                       >
-                        <Link bg-zinc-900 href={item.href}>
+                        <Link
+                          className="hover:bg-black hover:text-white"
+                          href={item.href}
+                        >
                           <Icon />
-                          <span className="font-medium">{item.label}</span>
+                          <span className="">{item.label}</span>
                         </Link>
                       </SidebarMenuButton>
                     ) : (
