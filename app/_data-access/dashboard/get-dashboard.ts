@@ -29,9 +29,10 @@ export const getDashboardData = async (): Promise<DashboardDto> => {
       { totalRevenue: number }[]
     >(
       `
-      SELECT SUM("unitPrice" * "quantity") AS "totalRevenue"
-      FROM "SaleProduct"
-      WHERE "createdAt" >= $1 AND "createdAt" <= $2
+    SELECT SUM("SaleProduct"."unitPrice" * "SaleProduct"."quantity") as "totalRevenue"
+    FROM "SaleProduct"
+    JOIN "Sale" ON "SaleProduct"."saleId" = "Sale"."id"
+    WHERE "Sale"."date" >= $1 AND "Sale"."date" <= $2;
       `,
       day.startOf("day").toDate(),
       day.endOf("day").toDate(),
@@ -49,16 +50,18 @@ export const getDashboardData = async (): Promise<DashboardDto> => {
   endOfToday.setHours(23, 59, 59, 999);
 
   const totalRevenuePromise = db.$queryRaw<Array<{ totalRevenue: number }>>`
-    SELECT COALESCE(SUM("unitPrice" * "quantity"), 0) AS "totalRevenue"
-    FROM "SaleProduct";
+    SELECT SUM("SaleProduct"."unitPrice" * "SaleProduct"."quantity") as "totalRevenue"
+  FROM "SaleProduct"
+  JOIN "Sale" ON "SaleProduct"."saleId" = "Sale"."id";
   `;
 
   const todayRevenuePromise = db.$queryRaw<
     Array<{ todayRevenue: number | string | null }>
   >`
-    SELECT COALESCE(SUM("unitPrice" * "quantity"), 0) AS "todayRevenue"
-    FROM "SaleProduct"
-    WHERE "createdAt" >= ${startOfToday} AND "createdAt" <= ${endOfToday};
+    SELECT SUM("SaleProduct"."unitPrice" * "SaleProduct"."quantity") as "todayRevenue"
+  FROM "SaleProduct"
+  JOIN "Sale" ON "SaleProduct"."saleId" = "Sale"."id"
+  WHERE "Sale"."date" >= ${startOfToday} AND "Sale"."date" <= ${endOfToday};
   `;
   const totalSalesPromise = db.sale.count();
   const totalStockPromise = db.product.aggregate({
