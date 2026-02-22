@@ -1,22 +1,54 @@
+import "server-only";
 import { db } from "@/lib/prisma";
+import dayjs from "dayjs";
 
+export interface DayTotalRevenue {
+  dayTotal: string;
+  totalRevenue: number;
+}
 interface DashboardDto {
   totalRevenue: number;
   todayRevenue: number;
   totalSales: number;
   totalStock: number;
   totalProducts: number;
+  totalLast14DaysRevenue: DayTotalRevenue[];
 }
 
 export const getDashboardData = async (): Promise<DashboardDto> => {
+  const today = dayjs().endOf("day").toDate();
+  const last14Days = [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map(
+    (day) => {
+      return dayjs(today).subtract(day, "day");
+    },
+  );
+
+  const totalLast14DaysRevenue: DayTotalRevenue[] = [];
+  for (const day of last14Days) {
+    const dayTotalRevenue = await db.$queryRawUnsafe<
+      { totalRevenue: number }[]
+    >(
+      `
+      SELECT SUM("unitPrice" * "quantity") AS "totalRevenue"
+      FROM "SaleProduct"
+      WHERE "createdAt" >= $1 AND "createdAt" <= $2
+      `,
+      day.startOf("day").toDate(),
+      day.endOf("day").toDate(),
+    );
+    totalLast14DaysRevenue.push({
+      dayTotal: day.format("DD/MM"),
+      totalRevenue: Number(dayTotalRevenue[0]?.totalRevenue ?? 0),
+    });
+  }
+  console.log({ totalLast14DaysRevenue });
+
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
   const endOfToday = new Date();
   endOfToday.setHours(23, 59, 59, 999);
 
-  const totalRevenuePromise = db.$queryRaw<
-    Array<{ totalRevenue: number | string | null }>
-  >`
+  const totalRevenuePromise = db.$queryRaw<Array<{ totalRevenue: number }>>`
     SELECT COALESCE(SUM("unitPrice" * "quantity"), 0) AS "totalRevenue"
     FROM "SaleProduct";
   `;
@@ -56,5 +88,6 @@ export const getDashboardData = async (): Promise<DashboardDto> => {
     totalSales,
     totalStock: Number(totalStock._sum.stock),
     totalProducts,
+    totalLast14DaysRevenue,
   };
 };
