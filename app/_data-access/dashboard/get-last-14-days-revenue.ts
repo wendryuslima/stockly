@@ -8,7 +8,7 @@ export interface DayTotalRevenue {
 }
 
 export const getLast14DaysRevenue = async () => {
- 
+  
 
   const today = dayjs().endOf("day").toDate();
   const last14Days = [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map(

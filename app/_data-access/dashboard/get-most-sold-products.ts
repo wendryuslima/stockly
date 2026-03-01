@@ -10,6 +10,7 @@ export interface MostSoldProductDto {
 }
 
 export const getMostSoldProduct = async (): Promise<MostSoldProductDto[]> => {
+
   const mostSoldProductsQuery = `
         SELECT "Product"."name", SUM("SaleProduct"."quantity") as "totalSold", "Product"."price", "Product"."stock"
         FROM "SaleProduct"
