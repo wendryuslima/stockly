@@ -14,7 +14,11 @@ import { LayoutDashboard, Package, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const Appsidebar = () => {
+interface AppSidebarProps {
+  onItemClick?: () => void;
+}
+
+const Appsidebar = ({ onItemClick }: AppSidebarProps) => {
   const navItems = [
     {
       label: "Dashboard",
@@ -34,6 +38,10 @@ const Appsidebar = () => {
   ];
 
   const pathname = usePathname();
+  const handleItemClick = () => {
+    onItemClick?.();
+  };
+  
   return (
     <Sidebar>
       <SidebarContent>
@@ -49,6 +57,7 @@ const Appsidebar = () => {
                     {isActive ? (
                       <SidebarMenuButton
                         className="bg-zinc-900 text-white"
+                        onClick={handleItemClick}
                         asChild
                       >
                         <Link
@@ -60,7 +69,7 @@ const Appsidebar = () => {
                         </Link>
                       </SidebarMenuButton>
                     ) : (
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton onClick={handleItemClick} asChild>
                         <Link href={item.href}>
                           <Icon />
                           <span className="font-medium">{item.label}</span>
