@@ -1,7 +1,6 @@
 import TitlePages from "../_components/title-pages";
 import { getDashboardData } from "../_data-access/dashboard/get-dashboard";
 
-import RevenueCharts from "./_components/revenue-charts";
 import MostSoldProductsItem from "./_components/most-sold-products-item";
 import TotalRevenueCard from "../sales/_components/total-revenue-card";
 import { Suspense } from "react";
@@ -10,12 +9,10 @@ import TodayRevenueCard from "../sales/_components/today-revenue-card";
 import TotalSaleCard from "../sales/_components/total-sale-card";
 import TotalStock from "../sales/_components/total-stock-card";
 import TotalProductsCard from "../sales/_components/total-products-card";
+import Last14DaysRevenueCard from "../sales/_components/last-14-days-revenue-card";
 
 const HomePage = async () => {
-  const {
-    totalLast14DaysRevenue,
-    mostSoldProducts,
-  } = await getDashboardData();
+  const { mostSoldProducts } = await getDashboardData();
 
   return (
     <div className="flex w-full flex-col space-y-8 p-8">
@@ -48,11 +45,7 @@ const HomePage = async () => {
       </div>
 
       <div className="grid min-h-0 grid-cols-[minmax(0,2.5fr),minmax(0,1fr)] gap-4">
-        <div className="flex h-full flex-col gap-2 overflow-hidden rounded-xl bg-white p-6">
-          <p className="text-[18px] font-semibold text-slate-900">Receita</p>
-          <p className="text-sm text-slate-400">Últimos 14 dias</p>
-          <RevenueCharts data={totalLast14DaysRevenue} />
-        </div>
+        <Last14DaysRevenueCard  />
 
         <div className="flex h-full flex-col gap-2 overflow-hidden rounded-xl bg-white p-6">
           <p className="text-[18px] font-semibold text-slate-900">
