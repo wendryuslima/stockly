@@ -83,6 +83,7 @@ const SalesDropdownMenu = ({
 
       <UpsertSheetContent
         saleId={id}
+        isSheetOpen={upsertSheetIsOpen}
         defaultSelectedProducts={saleProducts.map((saleProduct) => ({
           id: saleProduct.productId,
           quantity: saleProduct.quantity,

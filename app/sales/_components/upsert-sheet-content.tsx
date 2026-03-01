@@ -34,8 +34,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Product } from "@/lib/generated/prisma";
 
-import { CheckIcon, Loader2Icon, PlusIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Loader2Icon, PlusIcon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -58,6 +58,7 @@ interface UpsertSheetContentProps {
   products: Product[];
   productOptions: ComboboxOption[];
   setSheetIsOpen: (open: boolean) => void;
+  isSheetOpen: boolean;
   defaultSelectedProducts?: SelectProduct[];
 }
 
@@ -79,12 +80,13 @@ const UpsertSheetContent = ({
   productOptions,
   setSheetIsOpen,
   defaultSelectedProducts,
+  isSheetOpen,
 }: UpsertSheetContentProps) => {
   const [selectProduct, setSelectProduct] = useState<SelectProduct[]>(
     defaultSelectedProducts ?? [],
   );
-  const [isLoading, setIsLoading] = useState(false);
-  const { execute: executeUpsertSale } = useAction(upsertSale, {
+
+  const { execute: executeUpsertSale, isPending } = useAction(upsertSale, {
     onError: ({ error }) => {
       const flattenedErrors = error.validationErrors
         ? flattenValidationErrors(error.validationErrors)
@@ -99,7 +101,6 @@ const UpsertSheetContent = ({
     onSuccess: () => {
       toast.success("Venda realizada com successo");
       setSheetIsOpen(false);
-      setIsLoading(false);
     },
   });
 
@@ -110,6 +111,15 @@ const UpsertSheetContent = ({
       quantity: 1,
     },
   });
+
+  useEffect(() => {
+    if (isSheetOpen) return;
+    form.reset({
+      productId: "",
+      quantity: 1,
+    });
+    setSelectProduct(defaultSelectedProducts ?? []);
+  }, [defaultSelectedProducts, form, isSheetOpen]);
   const onSubmit = (data: FormSchemaType) => {
     const selectedProduct = products.find(
       (product) => product.id === data.productId,
@@ -151,7 +161,6 @@ const UpsertSheetContent = ({
         },
       ]);
     }
-    form.reset();
 
     console.log(selectedProduct);
   };
@@ -270,13 +279,12 @@ const UpsertSheetContent = ({
       </Table>
       <SheetFooter className="pt-6">
         <Button
-          disabled={hasProduct || isLoading}
+          disabled={hasProduct || isPending}
           onClick={handleSubmitSale}
           className="w-full gap-2"
         >
-          {isLoading ? (
+          {isPending ? (
             <>
-              <CheckIcon size={20} />
               <Loader2Icon className="h-4 w-4 animate-spin" />
               ...Carregando
             </>

@@ -14,6 +14,7 @@ interface UpsertSaleButtonProps {
 
 const UpsertSaleButton = (props: UpsertSaleButtonProps) => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <SheetTrigger>
@@ -22,7 +23,11 @@ const UpsertSaleButton = (props: UpsertSaleButtonProps) => {
           <PlusIcon size={14} />
         </Button>
       </SheetTrigger>
-      <UpsertSheetContent setSheetIsOpen={setIsSheetOpen} {...props} />
+      <UpsertSheetContent
+        isSheetOpen={isSheetOpen}
+        setSheetIsOpen={setIsSheetOpen}
+        {...props}
+      />
     </Sheet>
   );
 };

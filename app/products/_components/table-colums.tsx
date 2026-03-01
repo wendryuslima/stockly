@@ -2,28 +2,21 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import type { Product } from "@/lib/generated/prisma";
-import { Badge } from "@/components/ui/badge";
-import { CircleIcon } from "lucide-react";
 
 import ProductsDropdownMenu from "./products-dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 const getStatus = (status: string) => {
   if (status === "IN_STOCK") {
     return (
-      <Badge className="bg-[#EBFAF7] text-[#00A180]">
-        <div className="flex items-center gap-1">
-          <CircleIcon className="fill-[#00A180]" size={9} />
-          Em estoque
-        </div>
+      <Badge className="rounded-md bg-[#EBFAF7] px-2 py-1 text-xs text-[#00A180] hover:bg-transparent">
+        Em estoque
       </Badge>
     );
   }
   return (
-    <Badge className="bg-[#64748B1A] text-slate-500">
-      <div className="flex items-center gap-1">
-        <CircleIcon className="fill-slate-500" size={9} />
-        Esgotado
-      </div>
+    <Badge className="rounded-md bg-[#64748B1A] px-2 py-1 text-xs text-slate-500">
+      Esgotado
     </Badge>
   );
 };
