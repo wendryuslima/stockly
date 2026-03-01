@@ -1,4 +1,4 @@
-import { MostSoldProductDto } from "@/app/_data-access/dashboard/get-dashboard";
+import { MostSoldProductDto } from "@/app/_data-access/dashboard/get-most-sold-products";
 import { formatCurrency } from "@/app/helpers/currency";
 import { Badge } from "@/components/ui/badge";
 

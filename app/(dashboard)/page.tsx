@@ -1,7 +1,4 @@
 import TitlePages from "../_components/title-pages";
-import { getDashboardData } from "../_data-access/dashboard/get-dashboard";
-
-import MostSoldProductsItem from "./_components/most-sold-products-item";
 import TotalRevenueCard from "../sales/_components/total-revenue-card";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,10 +7,9 @@ import TotalSaleCard from "../sales/_components/total-sale-card";
 import TotalStock from "../sales/_components/total-stock-card";
 import TotalProductsCard from "../sales/_components/total-products-card";
 import Last14DaysRevenueCard from "../sales/_components/last-14-days-revenue-card";
+import MostSoldProducts from "../sales/_components/most-sold-products-card";
 
 const HomePage = async () => {
-  const { mostSoldProducts } = await getDashboardData();
-
   return (
     <div className="flex w-full flex-col space-y-8 p-8">
       <div className="flex w-full items-center justify-between">
@@ -45,25 +41,13 @@ const HomePage = async () => {
       </div>
 
       <div className="grid min-h-0 grid-cols-[minmax(0,2.5fr),minmax(0,1fr)] gap-4">
-        <Last14DaysRevenueCard  />
+        <Suspense fallback={<Skeleton />}>
+          <Last14DaysRevenueCard />
+        </Suspense>
 
-        <div className="flex h-full flex-col gap-2 overflow-hidden rounded-xl bg-white p-6">
-          <p className="text-[18px] font-semibold text-slate-900">
-            Mais vendidos
-          </p>
-          {mostSoldProducts.map((product) => (
-            <MostSoldProductsItem
-              key={product.name}
-              product={{
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                totalSold: product.totalSold,
-                status: product.status,
-              }}
-            />
-          ))}
-        </div>
+        <Suspense>
+          <MostSoldProducts />
+        </Suspense>
       </div>
     </div>
   );
