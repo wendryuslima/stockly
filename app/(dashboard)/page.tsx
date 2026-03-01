@@ -45,7 +45,7 @@ const HomePage = async () => {
           <Last14DaysRevenueCard />
         </Suspense>
 
-        <Suspense>
+        <Suspense fallback={<Skeleton />}>
           <MostSoldProducts />
         </Suspense>
       </div>
