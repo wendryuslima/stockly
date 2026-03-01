@@ -6,8 +6,8 @@ import type { Product } from "@/lib/generated/prisma";
 import ProductsDropdownMenu from "./products-dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 
-const getStatus = (status: string) => {
-  if (status === "IN_STOCK") {
+const getStatus = (stock: number) => {
+  if (stock > 0) {
     return (
       <Badge className="rounded-md bg-[#EBFAF7] px-2 py-1 text-xs text-[#00A180] hover:bg-transparent">
         Em estoque
@@ -55,7 +55,7 @@ export const productColumDef: ColumnDef<Product>[] = [
     header: "Status",
     cell: ({ row }) => {
       const product = row.original;
-      const label = getStatus(product.status);
+      const label = getStatus(product.stock);
       return label;
     },
   },
