@@ -47,12 +47,12 @@ const MostSoldProductsSkeleton = () => {
 
 const HomePage = async () => {
   return (
-    <div className="flex w-full flex-col space-y-8 p-8">
+    <div className="flex w-full flex-col space-y-6 p-4 sm:p-6 lg:p-8">
       <div className="flex w-full items-center justify-between">
         <TitlePages title="Dashboard" description="Visão geral do sistema" />
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
         <Suspense fallback={<SummaryCardSkeleton />}>
           <TotalRevenueCard />
         </Suspense>
@@ -62,7 +62,7 @@ const HomePage = async () => {
         </Suspense>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
         <Suspense fallback={<SummaryCardSkeleton />}>
           <TotalSaleCard />
         </Suspense>
@@ -76,7 +76,7 @@ const HomePage = async () => {
         </Suspense>
       </div>
 
-      <div className="grid min-h-0 grid-cols-[minmax(0,2.5fr),minmax(0,1fr)] gap-4">
+      <div className="grid min-h-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,2.5fr),minmax(0,1fr)] lg:gap-6">
         <Suspense fallback={<RevenueChartSkeleton />}>
           <Last14DaysRevenueCard />
         </Suspense>
